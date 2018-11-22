@@ -1,6 +1,7 @@
 
 # Tulsa County
 
+# URL for Tulsa County Inmate Information Center
 BOOKINGS_URL= 'http://iic.tulsacounty.org'
 
 GENERIC_HEADER = {

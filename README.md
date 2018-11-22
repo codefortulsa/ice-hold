@@ -1,12 +1,14 @@
-# Scripts for researching ice detainees in Tulsa
+# Scripts for researching ICE detainees in Tulsa
 
-## file descriptions
-* dlm-inmates.py: python script for saving iic.tulsacounty.org info to a csv
-* settings.py: details of the tulsacounty url
-* _helpers.py: parsing utilities
+The [Tulsa County Inmate Information Center](http://iic.tulsacounty.org/expInmateBookings/BookingIndex) website provides a page to scroll through a list of inmates.  The dlm-inmates script retrieves all pages and also looks up inmate details.  Inmates with an ICE hold are denoted by the 'TLS' number in their record.
+
+## Files
+* __dlm-inmates.py__: python script for saving iic.tulsacounty.org info to a csv
+* __settings.py__: details of the tulsacounty url
+* __\_helpers.py__: utilities for cleaning text
 
 ## Set up
-1. Create a virtual env
+1. Create a Python 3.6.5 virtual env
 1. Clone this repo
 1. 'cd ice-hold'
 1. 'mkdir data' (this is ignored)
