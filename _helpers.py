@@ -12,7 +12,8 @@ def clean_string(some_string):
     return condensed.strip()
 
 
-text_values = lambda ResultSet: [clean_string(el.text) for el in ResultSet]
+def text_values(ResultSet):
+    return [clean_string(el.text) for el in ResultSet]
 
 
 def add_properties(obj, names, values):

@@ -12,7 +12,9 @@ def param_generator():
     for p in pages:
         yield {'grid-page': p}
 
+
 def get_values(params):
+    print("GETting page %s." % params['grid-page'])
     response = requests.get(BOOKINGS_URL, params)
     soup = BeautifulSoup(response.text, 'html.parser')
     inmate_table = soup.find('table', 'table table-striped grid-table')
@@ -20,7 +22,8 @@ def get_values(params):
     rows = inmate_table.find('tbody').find_all('tr')
     # return a list of column headers and a list of table rows
     # each row is a list of the values in the row
-    return (text_values(thead), [text_values(row.find_all('td')) for row in rows])
+    return (text_values(thead),
+            [text_values(row.find_all('td')) for row in rows])
 
 # open a file for writing
 
@@ -31,10 +34,8 @@ with open('data/dlm_inmates.csv', 'w', newline='') as csvfile:
     request_params = param_generator()
     (header, inmates) = get_values(next(request_params))
     dlm_writer.writerow(header)
-    print(header)
 
     while True:
-        [print (inmate) for inmate in inmates]
         [dlm_writer.writerow(inmate) for inmate in inmates]
         last_inmates = inmates
         (header, inmates) = get_values(next(request_params))
