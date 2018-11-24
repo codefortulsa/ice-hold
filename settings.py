@@ -2,10 +2,20 @@
 # Tulsa County
 
 # URL for Tulsa County Inmate Information Center
-BOOKINGS_URL= 'http://iic.tulsacounty.org'
+DLM_BOOKINGS_URL= 'http://iic.tulsacounty.org'
 
-GENERIC_HEADER = {
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36',
+# URL for the City of Tulsa Jail
+
+TULSA_JAIL_URL ='https://www.cityoftulsa.org/apps/inmateinformationcenter'
+
+TULSA_AJAX_URL = (
+    f'{TULSA_JAIL_URL}/AjaxReference/CompleteInmates.aspx/ServiceReference'
+)
+
+
+AJAX_HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.170 Safari/537.36 OPR/53.0.2907.99',
     'Accept-Encoding': 'gzip, deflate, br',
-    'Accept-Language': 'en-US,en;q=0.9'
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Content-Type': 'application/json; charset=UTF-8'
     }

@@ -20,6 +20,8 @@ def add_properties(obj, names, values):
     for idx, value in enumerate(values):
         setattr(obj, names[idx], value)
 
+def dict_values(dict):
+    return [dict[key] for key in dict.keys()]
 
 def lists2dict(keys, values):
     return {k: v for k, v in map(lambda k, v: (k, v), keys, values)}

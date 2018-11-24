@@ -1,12 +1,14 @@
 import re
 import csv
+import json
 import requests
 from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 
-from settings import DLM_BOOKINGS_URL as BOOKINGS_URL
-from _helpers import text_values, clean_string
+from settings import TULSA_AJAX_URL as BOOKINGS_URL
+from settings import AJAX_HEADERS as HEADERS
+from _helpers import text_values, clean_string, dict_values
 
 
 iic_session = requests.Session()
@@ -76,36 +78,22 @@ def get_inmate_details(inmate_row):
     return (detail_header, detail_values)
 
 
-def get_inmate_list(params):
-    print("GETting page %s." % params['grid-page'])
-    response = iic_session.get(f'{BOOKINGS_URL}/expInmateBookings/BookingIndex', params=params)
-    soup = BeautifulSoup(response.text, 'html.parser')
-    inmate_table = soup.find('table', 'table table-striped grid-table')
-    thead = inmate_table.find('thead').find_all('th')
-    rows = inmate_table.find('tbody').find_all('tr')
+def get_inmate_list():
+    print('POSTing request for all inmates in the past 90 days')
+    response = iic_session.post(f'{BOOKINGS_URL}',data={}, headers=HEADERS)
+    inmates = json.loads(response.json()['d']['ReturnCode'])
 
-    inmate_rows = []
-    for row in rows:
-        (detail_header, detail_values) = get_inmate_details(row)
-        inmate_rows.append(text_values(row.find_all('td')) + detail_values)
-    headers = text_values(thead) + detail_header
+    # use first inmate dict keys as column headers
+    headers = inmates[0].keys()
+    # make a list of the inmate values
+    inmate_rows = [dict_values(inmate) for inmate in inmates]
     # return a list of column headers and a list of table rows
     # each row is a list of the values in the row
     return (headers, inmate_rows)
 
-# open a file for writing
-
-with open('data/dlm_inmates.csv', 'w', newline='') as csvfile:
+with open('data/tulsa_city_inmates.csv', 'w', newline='') as csvfile:
+    columns, inmates = get_inmate_list()
     dlm_writer = csv.writer(csvfile, delimiter=',',
                             quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    # get started with the first page
-    request_params = param_generator()
-    (header, inmates) = get_inmate_list(next(request_params))
-    dlm_writer.writerow(header)
-
-    while True:
-        [dlm_writer.writerow(inmate) for inmate in inmates]
-        last_inmates = inmates
-        (header, inmates) = get_inmate_list(next(request_params))
-        if inmates == last_inmates:
-            break
+    dlm_writer.writerow(columns)
+    [dlm_writer.writerow(inmate) for inmate in inmates]
