@@ -1,4 +1,3 @@
-import re
 import csv
 import json
 import requests
@@ -20,7 +19,8 @@ with requests.Session() as iic_session:
         return payload
 
     def get_hold_information(details_param):
-        hold_info_from = lambda item: True if item['hold'] else False
+        def hold_info_from(item):
+            return True if item['hold'] else False
 
         # the chages list includes a hold element
         charges = get_aspx_payload('Incident', params=details_param)
@@ -37,7 +37,7 @@ with requests.Session() as iic_session:
 
         # get Inmate details
         inmate = get_aspx_payload('InmateInfo', params=params)
-        detail_header = [k for k in inmate.keys()]
+        detail_header = list(inmate.keys())
         detail_values = dict_values(inmate)
 
         # look up hold information
@@ -50,32 +50,36 @@ with requests.Session() as iic_session:
     def get_inmate_list():
         print('POSTing request for all inmates in the past 90 days')
 
-        id_params = lambda inmate: {'dataId': inmate['IncidentRecordID']}
+        def id_params(inmate):
+            return {'dataId': inmate['IncidentRecordID']}
 
         all_inmates_list = get_aspx_payload('CompleteInmates', params='')
 
         # use first inmate dict keys as column headers
         inmates = iter(all_inmates_list)
         first_inmate = next(inmates)
+        first_inmate_headers = list(first_inmate.keys())
         first_inmate_values = dict_values(first_inmate)
 
-        # get details header from first inmate
-        (first_details_header, first_inmate_details) = (
-            get_inmate_details(id_params(first_inmate))
-            )
-        headers = (
-            [k for k in first_inmate.keys()] + first_details_header
-            )
+        # get details from the first inmate
+        first_id = id_params(first_inmate)
+        first_detail_header, first_detail_values = get_inmate_details(first_id)
+        headers = first_inmate_headers + first_detail_header
+
         #  start a list of rows with the first inmate values
         inmate_rows = []
-        inmate_rows.append(first_inmate_values + first_inmate_details)
+        inmate_rows.append(first_inmate_values + first_detail_values)
 
         # get the details on the remaining inmates
+        inmate_len = len(all_inmates_list)
+        inmate_count = 0
         for inmate in inmates:
-            (detail_header, detail_values) = (
-                get_inmate_details(id_params(inmate))
-                )
-            inmate_rows.append(dict_values(inmate) + detail_values)
+            inmate_count += 1
+            print(f'{inmate_count} of {inmate_len}')
+            inmate_id = id_params(inmate)
+            inmate_booking_values = dict_values(inmate)
+            detail_header, detail_values = get_inmate_details(inmate_id)
+            inmate_rows.append(inmate_booking_values + detail_values)
 
         # return a list of column headers and a list of table rows
         return (headers, inmate_rows)
