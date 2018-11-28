@@ -11,6 +11,7 @@ The CSV files created by these scripts includes a column to identify inmates on 
 * __tulsa-jail.py__: python script for saving www.cityoftulsa.org information
 * __settings.py__: details of the tulsacounty url
 * __\_helpers.py__: utilities for cleaning text
+* __save_csv.py__: function to validate columns and save data
 
 ## Set up
 1. Create a Python 3.6.5 virtual env
