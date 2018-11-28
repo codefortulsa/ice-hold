@@ -35,7 +35,6 @@ def save_csv(file_name, data_iter):
         return [e[1] for e in valid_enums]
 
     # open a file for writing
-    import ipdb; ipdb.set_trace()
     with open(file_name, 'w', newline='') as csvfile:
         dlm_writer = csv.writer(csvfile, delimiter=',',
                                 quotechar='"', quoting=csv.QUOTE_MINIMAL)

@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 
 from settings import DLM_BOOKINGS_URL as BOOKINGS_URL
 from _helpers import text_values, clean_string
-
+from save_csv import save_csv
 
 def param_generator():
     for page_num in range(1, 200):
@@ -105,19 +105,19 @@ with requests.Session() as iic_session:
 
         return (columns_headers, output_rows)
 
-    # open a file for writing
-
-    with open('data/dlm_inmates.csv', 'w', newline='') as csvfile:
-        dlm_writer = csv.writer(csvfile, delimiter=',',
-                                quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    def inmate_generator():
         # get started with the first page
         request_params = param_generator()
         (header, inmates) = get_inmate_list(next(request_params))
-        dlm_writer.writerow(header)
-
+        yield header
         while True:
-            [dlm_writer.writerow(inmate) for inmate in inmates]
+            for inmate in inmates:
+                yield inmate
             last_inmates = inmates
             (header, inmates) = get_inmate_list(next(request_params))
             if inmates == last_inmates:
                 break
+
+
+
+    save_csv('data/dlm_inmates.csv', inmate_generator())
