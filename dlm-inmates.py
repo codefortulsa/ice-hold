@@ -1,5 +1,4 @@
 import re
-import csv
 import requests
 from urllib.parse import urlparse
 
@@ -8,6 +7,7 @@ from bs4 import BeautifulSoup
 from settings import DLM_BOOKINGS_URL as BOOKINGS_URL
 from _helpers import text_values, clean_string
 from save_csv import save_csv
+
 
 def param_generator():
     for page_num in range(1, 200):
@@ -117,7 +117,5 @@ with requests.Session() as iic_session:
             (header, inmates) = get_inmate_list(next(request_params))
             if inmates == last_inmates:
                 break
-
-
 
     save_csv('data/dlm_inmates.csv', inmate_generator())

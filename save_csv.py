@@ -22,7 +22,7 @@ def save_csv(file_name, data_iter):
     # assumes the first row is column titles
     columns = next(data_iter)
     # make a list of indices that pass the validity test
-    test_indexes = [i for i,v in enumerate(columns) if is_valid(v)]
+    test_indexes = [i for i, v in enumerate(columns) if is_valid(v)]
     # remove any indices that failed
     valid_indexes = list(filter(lambda v: v is not None, test_indexes))
 

@@ -1,4 +1,3 @@
-import csv
 import json
 import requests
 
@@ -47,7 +46,7 @@ with requests.Session() as iic_session:
 
         return(detail_header, detail_values)
 
-    def get_inmate_list():
+    def inmate_generator():
         print('POSTing request for all inmates in the past 90 days')
 
         def id_params(inmate):
@@ -71,25 +70,11 @@ with requests.Session() as iic_session:
         yield first_row
 
         # get the details on the remaining inmates
-        # inmate_len = len(all_inmates_list)
-        # inmate_count = 0
         for inmate in inmates:
-            # inmate_count += 1
-            # print(f'{inmate_count} of {inmate_len}')
-            print(inmate)
             inmate_id = id_params(inmate)
             inmate_booking_values = dict_values(inmate)
             detail_header, detail_values = get_inmate_details(inmate_id)
             inmate_row = inmate_booking_values + detail_values
             yield inmate_row
-        # # return a list of column headers and a list of table rows
-        # return (headers, inmate_rows)
 
-    # columns, inmates = get_inmate_list()
-    save_csv('data/tulsa_city_inmates.csv', get_inmate_list())
-    #
-    # with open('data/tulsa_city_inmates.csv', 'w', newline='') as csvfile:
-    #     dlm_writer = csv.writer(csvfile, delimiter=',',
-    #                             quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    #     dlm_writer.writerow(columns)
-    #     [dlm_writer.writerow(inmate) for inmate in inmates]
+    save_csv('data/tulsa_city_inmates.csv', inmate_generator())
