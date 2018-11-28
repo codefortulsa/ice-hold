@@ -27,9 +27,10 @@ with requests.Session() as iic_session:
         charges_with_holds = filter(hold_info_from, charges)
         hold_instructions = list(map(lambda c: c['hold'], charges_with_holds))
 
-        # return last hold othewise empty str
-        # The '[::-1][0]' reverse sorts the list and returns the first item
-        return hold_instructions[::-1][0] if len(hold_instructions) > 0 else ''
+        # return last hold othewise emp
+        ty str
+        # The '[-1][0]' returns the last item
+        return hold_instructions[-1] if len(hold_instructions) > 0 else ''
 
     def get_inmate_details(params):
         # this function collects header and value information
