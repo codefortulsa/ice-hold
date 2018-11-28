@@ -5,6 +5,7 @@ import requests
 from settings import TULSA_JAIL_AJAX as BOOKINGS_URL
 from settings import AJAX_HEADERS as HEADERS
 from _helpers import dict_values
+from save_csv import save_csv
 
 with requests.Session() as iic_session:
 
@@ -27,9 +28,7 @@ with requests.Session() as iic_session:
         charges_with_holds = filter(hold_info_from, charges)
         hold_instructions = list(map(lambda c: c['hold'], charges_with_holds))
 
-        # return last hold othewise emp
-        ty str
-        # The '[-1][0]' returns the last item
+        # return last hold othewise empty str
         return hold_instructions[-1] if len(hold_instructions) > 0 else ''
 
     def get_inmate_details(params):
@@ -66,28 +65,31 @@ with requests.Session() as iic_session:
         first_id = id_params(first_inmate)
         first_detail_header, first_detail_values = get_inmate_details(first_id)
         headers = first_inmate_headers + first_detail_header
-
+        yield headers
         #  start a list of rows with the first inmate values
-        inmate_rows = []
-        inmate_rows.append(first_inmate_values + first_detail_values)
+        first_row = first_inmate_values + first_detail_values
+        yield first_row
 
         # get the details on the remaining inmates
-        inmate_len = len(all_inmates_list)
-        inmate_count = 0
+        # inmate_len = len(all_inmates_list)
+        # inmate_count = 0
         for inmate in inmates:
-            inmate_count += 1
-            print(f'{inmate_count} of {inmate_len}')
+            # inmate_count += 1
+            # print(f'{inmate_count} of {inmate_len}')
+            print(inmate)
             inmate_id = id_params(inmate)
             inmate_booking_values = dict_values(inmate)
             detail_header, detail_values = get_inmate_details(inmate_id)
-            inmate_rows.append(inmate_booking_values + detail_values)
+            inmate_row = inmate_booking_values + detail_values
+            yield inmate_row
+        # # return a list of column headers and a list of table rows
+        # return (headers, inmate_rows)
 
-        # return a list of column headers and a list of table rows
-        return (headers, inmate_rows)
-
-    with open('data/tulsa_city_inmates.csv', 'w', newline='') as csvfile:
-        columns, inmates = get_inmate_list()
-        dlm_writer = csv.writer(csvfile, delimiter=',',
-                                quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        dlm_writer.writerow(columns)
-        [dlm_writer.writerow(inmate) for inmate in inmates]
+    # columns, inmates = get_inmate_list()
+    save_csv('data/tulsa_city_inmates.csv', get_inmate_list())
+    #
+    # with open('data/tulsa_city_inmates.csv', 'w', newline='') as csvfile:
+    #     dlm_writer = csv.writer(csvfile, delimiter=',',
+    #                             quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    #     dlm_writer.writerow(columns)
+    #     [dlm_writer.writerow(inmate) for inmate in inmates]
