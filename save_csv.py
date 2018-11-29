@@ -32,11 +32,11 @@ def save_csv(file_name, data_iter):
             idx, val = enum
             return True if idx in valid_indexes else False
         valid_enums = filter(check_valid_index, enumerate(raw_list))
-        return [e[1] for e in valid_enums]
+        return [e[1].strip() for e in valid_enums]
 
     # open a file for writing
     with open(file_name, 'w', newline='') as csvfile:
         dlm_writer = csv.writer(csvfile, delimiter=',',
-                                quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                                quotechar='"', quoting=csv.QUOTE_ALL)
         dlm_writer.writerow(valid_list(columns))
         [dlm_writer.writerow(valid_list(row)) for row in data_iter]
