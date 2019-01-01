@@ -20,12 +20,22 @@ def add_properties(obj, names, values):
     for idx, value in enumerate(values):
         setattr(obj, names[idx], value)
 
+
 def dict_values(dict):
     return [dict[key] for key in dict.keys()]
+
 
 def lists2dict(keys, values):
     return {k: v for k, v in map(lambda k, v: (k, v), keys, values)}
 
+
+def find_values(soup, key_names):
+    key_values = []
+    for key in key_names:
+        key_found = soup.find(string=re.compile(f'{key}:'))
+        key_value = key_found.split(':')[1] if key_found else ''
+        key_values.append(clean_string(key_value))
+    return lists2dict(key_names, key_values)
 
 
 def make_filter(columns):

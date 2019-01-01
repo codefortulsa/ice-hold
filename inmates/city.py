@@ -17,17 +17,21 @@ with requests.Session() as iic_session:
         payload = json.loads(response.json()['d']['ReturnCode'])
         return payload
 
-    def get_hold_information(details_param):
+    def get_charge_information(details_param):
         def hold_info_from(item):
             return True if item['hold'] else False
 
-        # the chages list includes a hold element
+        charge_details = {'firstCharge': '', 'hold': ''}
         charges = get_aspx_payload('Incident', params=details_param)
+        charge_details['firstCharge'] = (
+            charges[0]['crime'] if len(charges) > 0 else '')
+        # the charges list includes a hold element
         charges_with_holds = filter(hold_info_from, charges)
         hold_instructions = list(map(lambda c: c['hold'], charges_with_holds))
-
+        charge_details['hold'] = (
+            hold_instructions[-1] if len(hold_instructions) > 0 else '')
         # return last hold othewise empty str
-        return hold_instructions[-1] if len(hold_instructions) > 0 else ''
+        return charge_details
 
     def get_inmate_details(params):
         # this function collects header and value information
@@ -39,10 +43,9 @@ with requests.Session() as iic_session:
         detail_values = dict_values(inmate)
 
         # look up hold information
-        detail_header.append('hold')
-        hold_text = get_hold_information(params)
-        detail_values.append(hold_text)
-
+        charge_info = get_charge_information(params)
+        detail_header += [k for k in charge_info.keys()]
+        detail_values += dict_values(charge_info)
         return(detail_header, detail_values)
 
     def inmate_generator():
@@ -74,4 +77,5 @@ with requests.Session() as iic_session:
             inmate_booking_values = dict_values(inmate)
             detail_header, detail_values = get_inmate_details(inmate_id)
             inmate_row = inmate_booking_values + detail_values
+            print(inmate_row)
             yield inmate_row
