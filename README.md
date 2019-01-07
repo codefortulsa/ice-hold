@@ -9,7 +9,7 @@ The CSV files created by these scripts includes a column to identify inmates on 
 ## Files
 * __dlm-inmates.py__: python script for saving iic.tulsacounty.org info to a csv
 * __tulsa-jail.py__: python script for saving www.cityoftulsa.org information
-* __settings.py__: details of the tulsacounty url
+* __settings.py__: details of the tulsa county url
 * __\_helpers.py__: utilities for cleaning text
 * __save_csv.py__: function to validate columns and save data
 

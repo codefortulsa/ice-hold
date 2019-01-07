@@ -1,3 +1,4 @@
+import sys
 import re
 import requests
 from urllib.parse import urlparse
@@ -75,11 +76,11 @@ with requests.Session() as iic_session:
                 detail_header = detail_header + charges_header
 
                 all_charges = charges_table.find_next('tbody').find_all('tr')
-                first_charge = all_charges[0]
-                first_charge_values = text_values(first_charge.find_all('td'))
-                detail_values = detail_values + first_charge_values
+                if len(all_charges) > 0:
+                    first_charge = all_charges[0]
+                    first_charge_values = text_values(first_charge.find_all('td'))
+                    detail_values = detail_values + first_charge_values
                 # add charge count
-
                 detail_header.append('charge_count')
                 charge_count = len(all_charges)
                 detail_values.append(f'{charge_count}')
@@ -100,7 +101,7 @@ with requests.Session() as iic_session:
         return (detail_header, detail_values)
 
     def get_inmate_list(params):
-        print("GETting page %s." % params['grid-page'])
+        # print("GETting page %s." % params['grid-page'])
         response = iic_session.get(
             f'{BOOKINGS_URL}/expInmateBookings/BookingIndex',
             params=params)
@@ -122,14 +123,18 @@ with requests.Session() as iic_session:
         return (columns_headers, output_rows)
 
     def inmate_generator():
+        print('requesting dlm moss inmates')
         # get started with the first page
         request_params = param_generator()
         (header, inmates) = get_inmate_list(next(request_params))
         yield header
         while True:
             for inmate in inmates:
+                sys.stdout.write('dlm.')
+                sys.stdout.flush()
                 yield inmate
             last_inmates = inmates
             (header, inmates) = get_inmate_list(next(request_params))
             if inmates == last_inmates:
                 break
+        print('county inmates complete')

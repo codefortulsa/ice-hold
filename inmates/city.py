@@ -1,3 +1,4 @@
+import sys
 import json
 import requests
 
@@ -49,7 +50,7 @@ with requests.Session() as iic_session:
         return(detail_header, detail_values)
 
     def inmate_generator():
-        print('POSTing request for all inmates in the past 90 days')
+        print('requesting for city inmates in the past 90 days')
 
         def id_params(inmate):
             return {'dataId': inmate['IncidentRecordID']}
@@ -77,5 +78,7 @@ with requests.Session() as iic_session:
             inmate_booking_values = dict_values(inmate)
             detail_header, detail_values = get_inmate_details(inmate_id)
             inmate_row = inmate_booking_values + detail_values
-            print(inmate_row)
+            sys.stdout.write('cty.')
+            sys.stdout.flush()
             yield inmate_row
+        print('city inmates complete')
