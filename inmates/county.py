@@ -9,9 +9,10 @@ from settings import DLM_BOOKINGS_URL as BOOKINGS_URL
 from ._helpers import text_values, clean_string
 
 
-def param_generator():
-    for page_num in range(1, 200):
+def param_generator(page_num):
+    while True:
         yield {'grid-page': page_num}
+        page_num += 1
 
 
 def get_details_url(el):
@@ -35,6 +36,7 @@ with requests.Session() as iic_session:
         details_url, details_param = get_details_url(inmate_row)
         response = iic_session.get(details_url, params=details_param)
         soup = BeautifulSoup(response.text, 'html.parser')
+
 
         arrest_start = soup.find('h4',
                                  string=re.compile(r'Arrest Information'))
@@ -68,6 +70,7 @@ with requests.Session() as iic_session:
                 detail_values.append(clean_string(tls_element))
             else:
                 detail_values.append('')
+
 
             charges_table = soup.find('table', 'table offense-table')
             if charges_table:
@@ -125,7 +128,6 @@ with requests.Session() as iic_session:
     def inmate_generator():
         print('requesting dlm moss inmates')
         # get started with the first page
-        request_params = param_generator()
         (header, inmates) = get_inmate_list(next(request_params))
         yield header
         while True:
