@@ -2,8 +2,8 @@ import sys
 import json
 import requests
 
-from settings import TULSA_JAIL_AJAX as BOOKINGS_URL
-from settings import AJAX_HEADERS as HEADERS
+from .settings import TULSA_JAIL_AJAX as BOOKINGS_URL
+from .settings import AJAX_HEADERS as HEADERS
 from ._helpers import dict_values
 
 with requests.Session() as iic_session:

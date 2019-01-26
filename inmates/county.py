@@ -5,14 +5,14 @@ from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 
-from settings import DLM_BOOKINGS_URL as BOOKINGS_URL
+from .settings import DLM_BOOKINGS_URL as BOOKINGS_URL
 from ._helpers import text_values, clean_string
 
 
-def param_generator(page_num):
+def param_generator(start_num):
     while True:
-        yield {'grid-page': page_num}
-        page_num += 1
+        yield {'grid-page': start_num}
+        start_num += 1
 
 
 def get_details_url(el):
@@ -128,6 +128,8 @@ with requests.Session() as iic_session:
     def inmate_generator():
         print('requesting dlm moss inmates')
         # get started with the first page
+        request_params = param_generator(1)
+        import ipdb; ipdb.set_trace()
         (header, inmates) = get_inmate_list(next(request_params))
         yield header
         while True:
